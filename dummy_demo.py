@@ -17,7 +17,15 @@ if not os.path.exists(experiment_name):
 env = Environment(experiment_name=experiment_name)
 env.play()
 
+#Other liberaties
+import time
+import datetime
+import numpy as np
+    
 #class EA (object)
+
+#creating population
+''' Create first population'''
 
 #def parent_selection(self, x_old, f_old):
     '''This function selects the parents from a population 
@@ -72,8 +80,21 @@ env.play()
 
 #    return x, f
 
+
+#functions for fitness
+    #def find_seconds(date_start, date_end):
+        '''seconds = (date_start - date_end)
+        return seconds'''
+
+        
+
+
 #def evaluate(self, x):
     # into the fitness function 
+    '''seconds = find_seconds()
+        power_points_lost = x
+        energie_enemy = x
+        fitness = alpha * seconds + beta * power_points_lost + gamma * energie_enemy + penalty'''
 
 #def step (self, x_old, f_old): 
     '''This function generates a new population of individuals 
