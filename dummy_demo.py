@@ -41,7 +41,7 @@ import numpy as np
 
 #    return x_parents, f_parents 
 
-#def recombination(self, x, f):
+def recombination(self, x, f):
     '''This function recombine the parents to new children by an uniform crossover operator
     
     Input: 
