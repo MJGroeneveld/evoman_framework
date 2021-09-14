@@ -50,7 +50,23 @@ import numpy as np
     
     Output: 
     x_children - array of children with parent genes '''
+    x_children = []
+    while len(x_children) < len(x) * self.n_children:
+        for i in range(self.n_children): 
+            #Make two random parents from the parent genes 
+            parents1 = x[np.random.randint(low = 0, high = len(x)-1)]
+            parents2 = x[np.random.randint(low = 0, high = len(x)-1)]
+            parents1_mask = np.random.randint(0, 2, size = np.array(parents1).shape)
+            parents2_mask = np.logical_not(parents1_mask)
 
+            #Create child(ren) with genes of the random parents 
+            child = np.add(np.multiply(parents1, parents1_mask), np.multiply(parents2, parents2_mask))
+            #Store the genes at an array in the children list: 
+            x_children.append(child)
+            #Return the list of created children:
+            return np.array(x_children)
+
+return x_children
 #   return x_children
 
 #def mutation (self, x): 
