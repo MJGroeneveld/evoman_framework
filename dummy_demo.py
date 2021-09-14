@@ -24,7 +24,7 @@ import numpy as np
     
 #class EA (object)
 
-#creating population
+#def creating_population(self):
 ''' Create first population'''
 
 #def parent_selection(self, x_old, f_old):
@@ -85,9 +85,6 @@ import numpy as np
     #def find_seconds(date_start, date_end):
         '''seconds = (date_start - date_end)
         return seconds'''
-
-        
-
 
 #def evaluate(self, x):
     # into the fitness function 
