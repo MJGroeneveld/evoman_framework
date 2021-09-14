@@ -24,9 +24,6 @@ import numpy as np
     
 #class EA (object)
 
-#def creating_population(self):
-''' Create first population'''
-
 #def parent_selection(self, x_old, f_old):
     '''This function selects the parents from a population 
     Select the two parents to crossover. The parents are selected in a way similar to a ring. The first with indices 0 
