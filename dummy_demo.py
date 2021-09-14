@@ -63,10 +63,9 @@ def recombination(self, x, f):
             child = np.add(np.multiply(parents1, parents1_mask), np.multiply(parents2, parents2_mask))
             #Store the genes at an array in the children list: 
             x_children.append(child)
-            #Return the list of created children:
-            return np.array(x_children)
-
-return x_children
+     #Return the list of created children:
+     return np.array(x_children)
+    
 #   return x_children
 
 #def mutation (self, x): 
