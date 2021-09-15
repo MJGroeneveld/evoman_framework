@@ -127,3 +127,147 @@ def recombination(self, x, f):
     # the population i: 
 #    x, f = self.selection(x_old, x_children, f_old, f_children)
 #    return x, f 
+
+
+----------------------
+
+ imports framework
+import sys, os
+sys.path.insert(0, 'evoman') 
+from environment import Environment
+
+experiment_name = 'dummy_demo'
+if not os.path.exists(experiment_name):
+    os.makedirs(experiment_name)
+
+# initializes environment with ai player using random controller, playing against static enemy
+env = Environment(experiment_name=experiment_name)
+env.play()
+
+class EA (object)
+    def __init__(self, ...., pop_size, bounds_min=None, bounds_max=None, std=0.1, n_children = 1): 
+        self.pop_size = pop_size 
+        self.bounds_min = bounds_min 
+        self.bounds_max = bounds_max 
+        self.std = std 
+        self.n_children = n_children 
+        self.bound = np.array(self.bounds_max) - np.array(self.bounds_min)
+
+#def parent_selection(self, x_old, f_old):
+    '''This function selects the parents from a population 
+    Select the two parents to crossover. The parents are selected in a way similar to a ring. The first with indices 0 
+    and 1 are selected at first to produce two offspring. If there still remaining offspring to produce, then we select 
+    parent 1 with parent 2 to produce another two offspring 
+    
+    Input: 
+    x_old  -  array of population genes 
+    y_old  -  array of population fitness 
+    
+    Output: 
+    x_parents - array of parents genes 
+    f_parents - array of parents fitness '''
+
+
+#    return x_parents, f_parents 
+
+#def recombination(self, x, f):
+    '''This function recombine the parents to new children by an uniform crossover operator
+
+    Input: 
+    x - array of parent genes 
+    y - array of parent fitness
+    
+    Output: 
+    x_children - array of children with parent genes '''
+
+#    x_children = []
+#    while len(x_children) < len(x) * self.n_children:
+#        for i in range(self.n_children): 
+            #Make two random parents from the parent genes 
+#            parents1 = x[np.random.randint(low = 0, high = len(x)-1)]
+#            parents2 = x[np.random.randint(low = 0, high = len(x)-1)]
+#            parents1_mask = np.random.randint(0, 2, size = np.array(parents1).shape)
+#            parents2_mask = np.logical_not(parents1_mask)
+
+            #Create child(ren) with genes of the random parents 
+#            child = np.add(np.multiply(parents1, parents1_mask), np.multiply(parents2, parents2_mask))
+            #Store the genes at an array in the children list: 
+#            x_children.append(child)
+            #Return the list of created children:
+#            return np.array(x_children)
+
+def mutation (self, x): 
+    '''This function mutates the new children with Gaussian noise
+    
+    Input: 
+    x - array of children genes 
+    
+    Output: 
+    x - array of mutated children genes '''
+
+    #mutate each child:
+    for i in x:
+    # get a random noise scaled to the gene range
+    if np.rndom.uniform(0, 1)<=mutation:
+        noise = np.random.normal(0, self.std)*self.bound
+    # add the noise to the child -> update the gene value:
+        i += noise
+    # make sure that the mutated children are within the range:
+        i = np.clip(i, self.bounds_min, self.bounds_max)
+    return x
+
+
+#def selection (self, x_old, x_children, f_old, f_children): 
+    '''This function selects a number of genes in the total population to go to the next 
+    
+    Input: 
+    x_old - array of population genes
+    x_children - array of children genes  
+    f_old - array of population fitness 
+    f_children - array of children fitness 
+    
+    Output: 
+    x - array of genes which survived 
+    f - array of fitness which survived '''
+
+#    return x, f
+
+#def evaluate(self, x):
+    # into the fitness function 
+
+#def step (self, x_old, f_old): 
+    '''This function generates a new population of individuals 
+    
+    Input: 
+    x_old - array of population genes 
+    f_old - array of population fitness 
+    
+    Output: 
+    x - array of new population genes 
+    f - array of new population fitness'''
+
+    #selection of parents from the old population:
+#    x_parents, f_parents = self.parent_selection(x_old, f_old)
+    #the parents recombine into children:
+#    x_children  = self.recombination (x_parents, f_parents)
+    #the children obtain some random mutation (gaussian noise):
+#    x_children = self.mutation(x_children)
+    #the children evaluate:
+#    f_children = self.evaluate(x_children)
+    # the population i: 
+#    x, f = self.selection(x_old, x_children, f_old, f_children)
+#    return x, f 
+
+#The following we change:
+num_generations = 25 
+pop_size = 25
+bounds_min = [-2., 0., -5., 0.]
+bounds_max = [10., 10., 20., 2500.]
+
+#Here we can state our other hyperparameters 
+#Use the values of the hyperparameters for which you obtained the best results 
+# do not iterate over them 
+
+ea = EA(popsize = popsize, bounds_min = bounds_min, bounds_max = bounds_max, std = 0.1, n_children =4)
+
+
