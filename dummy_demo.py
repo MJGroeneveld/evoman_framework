@@ -47,19 +47,51 @@ env.play()
 #Fitness function
 
 
-#def select_parents(x_old, f_old):
-    '''This function selects the parents from a population  Select the two parents to crossover. The parents are selected in a way similar to a ring. The first with indices 0 
-    and 1 are selected at first to produce two offspring. If there still remaining offspring to produce, then we select parent 1 with parent 2 to produce another two offspring 
+def select_parents(population_set, fitness_list):  #Roulette Wheel Selection
+    total_fit = fitness_list.sum()
+    prob_list = fitness_list/total_fit
     
-    Input: 
-    x_old  -  array of population genes 
-    y_old  -  array of population fitness 
+    #Notice there is the chance that a parent. mates with oneself
+    parent_list_a = np.random.choice(list(range(len(population_set))), len(population_set),p=prob_list, replace=True)
+    parent_list_b = np.random.choice(list(range(len(population_set))), len(population_set),p=prob_list, replace=True)
     
-    Output: 
-    x_parents - array of parents genes 
-    f_parents - array of parents fitness '''
+    parent_list_a = population_set[parent_list_a]
+    parent_list_b = population_set[parent_list_b]
 
-#    return x_parents, f_parents 
+    return np.array([parent_list_a,parent_list_b])
+
+
+def select_parents_by_rank(population_set, fitness_list, n_pairs): #Rank Selection
+    n = len(population_set)
+    rank_sum = n * (n + 1) / 2
+    prob_list = [i/rank_sum for i in range(1,101)][::-1]
+
+    f = fitness_list.argsort()
+    
+    #Notice there is the chance that a progenitor. mates with oneself
+    parent_list_a = np.random.choice(f, n_pairs, p=prob_list, replace=True)
+    parent_list_b = np.random.choice(f, n_pairs, p=prob_list, replace=True)
+    
+    parent_list_a = population_set[parent_list_a]
+    parent_list_b = population_set[parent_list_b]
+    
+    
+    return np.array([parent_list_a,parent_list_b])
+
+
+def tournament(fitness_list):
+		fit1, ch1 = fitness_list[random.randint(0, len(fitness_list) - 1)]
+		fit2, ch2 = fitness_list[random.randint(0, len(fitness_list) - 1)]
+
+		return ch1 if fit1 > fit2 else ch2
+
+
+def select_parents_by_tournament(fitness_list):
+    while 1:
+        parent1 = tournament(fitness_list)
+        parent2 = tournament(fitness_list)
+        yield (parent1, parent2)
+
 
 def create_children(parent1, parent2):
     children = []
