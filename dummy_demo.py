@@ -43,10 +43,6 @@ env.play()
 #### FUNCTIES ####
 #################################################################
 
-#def initialize_population
-pop_p = np.random.uniform(dom_l, dom_u, pop_size)
-pop_e = np.random.uniform(dom_l, dom_u, pop_size)
-
 #def evaluate_candidate_population
 #Fitness function
 
@@ -63,10 +59,7 @@ pop_e = np.random.uniform(dom_l, dom_u, pop_size)
     x_parents - array of parents genes 
     f_parents - array of parents fitness '''
 
-
 #    return x_parents, f_parents 
-
-# Create two parents for input
 
 def create_children(parent1, parent2):
     children = []
@@ -80,12 +73,12 @@ def create_children(parent1, parent2):
 
                 child1 = parent1
                 child2 = parent2       
-            #kind wordt geappend aan een lijst
+            #children must be appended to the list
             children.append(child1, child2)
     return np.array(children)
 
 def recombination(array_parents):
-    offspring = []
+    offspring = array_parents
     while len(array_parents) > 0:
         parent1 = array_parents.pop()
         parent2 = array_parents.pop()
@@ -158,7 +151,6 @@ if not os.path.exists(experiment_name+'/evoman_solstate'):
     solutions = [pop, fit_pop]
     env.update_solutions(solutions)
 
-#Here we can state our other hyperparameters 
 #Use the values of the hyperparameters for which you obtained the best results 
 # do not iterate over them 
 
@@ -236,6 +228,7 @@ for i in range(ini_g+1, gens):
     solutions = [pop, fit_pop]
     env.update_solutions(solutions)
     env.save_state()
+
 
 
 fim = time.time() # prints total execution time for experiment
