@@ -47,7 +47,7 @@ env.play()
 #Fitness function
 
 
-def select_parents(population_set, fitness_list):  #Roulette Wheel Selection
+def select_parents_Roulette_Wheel(population_set, fitness_list):  #Roulette Wheel Selection
     total_fit = fitness_list.sum()
     prob_list = fitness_list/total_fit
     
@@ -86,7 +86,7 @@ def tournament(fitness_list):
 		return ch1 if fit1 > fit2 else ch2
 
 
-def select_parents_by_tournament(fitness_list):
+def select_parents_by_tournament(fitness_list): #I think we have to give the parent_list as input here as well
     while 1:
         parent1 = tournament(fitness_list)
         parent2 = tournament(fitness_list)
