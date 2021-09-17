@@ -151,8 +151,26 @@ def mutation (x):
     Output: 
     x - array of genes which survived 
     f - array of fitness which survived '''
+	
+def selection_mu_comma_lambda (child, parents, fit_child):
+    #Children replace parents (mu, lambda):
+    x = child
+    f = fit_child #you get fit_child from the evaluate function (fitness function)
+    #sort the children based on their fitness: 
+    ranks = argsort(f)
+    x = x[ranks]
+    f = f[ranks]
+    return x[:pop_size], f[:pop_size] 
 
-#    return x, f
+def selection_mu_plus_lambda (child, parents, fit_child, fit_parents): 
+    x = np.concatenate([child, parents])
+    f = np.concatenate([fit_child, fit_parents])
+    #sort the total population based on their fitness: 
+    ranks = argsort(f)
+    x = x[ranks]
+    f = f[ranks]
+    return x[:pop_size], f[:pop_size]
+
 
 #################################################################    
 #### END FUNCTIONS ####
