@@ -188,8 +188,9 @@ bounds_max = [10., 10., 20., 2500.]
 dom_u = 1
 dom_l = -1
 gens = 100
-mutation = 0.2
+mutation_rate = 0.2
 last_best = 0
+bound = np.array(bounds_max) - np.array(bounds_min)
 
 # initializes population generating new ones
 if not os.path.exists(experiment_name+'/evoman_solstate'):
@@ -197,7 +198,7 @@ if not os.path.exists(experiment_name+'/evoman_solstate'):
     print( '\nNEW EVOLUTION\n')
 
     pop = np.random.uniform(dom_l, dom_u, (npop, n_vars))
-    fit_pop = evaluate(pop)
+    fit_pop = evaluate_candidate(pop)
     best = np.argmax(fit_pop)
     mean = np.mean(fit_pop)
     std = np.std(fit_pop)
@@ -224,12 +225,12 @@ notimproved = 0
 for i in range(ini_g+1, gens):
 
     offspring = crossover(pop)  # crossover
-    fit_offspring = evaluate(offspring)   # evaluation
+    fit_offspring = evaluate_candidate(offspring)   # evaluation
     pop = np.vstack((pop,offspring))
     fit_pop = np.append(fit_pop,fit_offspring)
 
     best = np.argmax(fit_pop) #best solution in generation
-    fit_pop[best] = float(evaluate(np.array([pop[best] ]))[0]) # repeats best eval, for stability issues
+    fit_pop[best] = float(evaluate_candidate(np.array([pop[best] ]))[0]) # repeats best eval, for stability issues
     best_sol = fit_pop[best]
 
     # selection
