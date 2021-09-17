@@ -93,32 +93,39 @@ def select_parents_by_tournament(fitness_list):
         yield (parent1, parent2)
 
 
-def create_children(parent1, parent2):
-    children = []
-    for i in range(n_children):
-                randomcrossover_vector = np.random.randint(0, 2, size = np.array(..).shape)
-                for j in randomcrossover_vector:
-                    if j == 1:
-                        temporaty_store = parent1[j] 
-                        parent1[j] = parent2[j]
-                        parent2[j] = temporaty_store
-
-                child1 = parent1
-                child2 = parent2       
-            #children must be appended to the list
-            children.append(child1, child2)
-    return np.array(children)
-
 def recombination(array_parents):
     offspring = array_parents
-    while len(array_parents) > 0:
-        parent1 = array_parents.pop()
-        parent2 = array_parents.pop()
-        children = create_children(parent1, parent2)
+    children = []
+    for p in range(0,array_parents.shape[0], 2):
+        parent1_idx = np.random.randint(array_parents.shape[0], size=1)
+        parent1 = array_parents[parent1_idx, :]
+        array_parents = np.delete(array_parents, parent1_idx, axis=0)
+        
+        parent2_idx = np.random.randint(array_parents.shape[0], size=1)
+        parent2 = array_parents[parent2_idx, :]
+        array_parents = np.delete(array_parents, parent2_idx, axis=0)
+        for i in range(2):
+                randomcrossover_vector = np.random.randint(0, 2, size = np.array(parent1).shape)
+                for j in randomcrossover_vector:
+                    for x in j:
+                        idx = 0
+                        if x == 1:
+                            temporaty_store = parent1[idx] 
+                            parent1[idx] = parent2[idx]
+                            parent2[idx] = temporaty_store
+                        idx = idx + 1
+
+                    child1 = mutation(parent1)
+                    child2 = mutation(parent2)       
+                
+                #children must be appended to the list
+                    children.append(child1)
+                    children.append(child2)
+
         offspring.append(children)    
     return offspring
 
-def mutation (x): 
+def mutation (child): 
     '''This function mutates the new children with Gaussian noise
     
     Input: 
@@ -127,17 +134,14 @@ def mutation (x):
     Output: 
     x - array of mutated children genes '''
 
-    #mutate each child:
-    for i in x:
-    # get a random noise scaled to the gene range
-        if np.rndom.uniform(0, 1)<=mutation:
-            noise = np.random.normal(0, std)*bound
+    if np.random.uniform(0, 1)<= mutation_rate:
+            noise = np.random.normal(0, 1)
+            #noise = np.random.normal(0, std)*bound
         # add the noise to the child -> update the gene value:
-            i += noise
+            child += noise
         # make sure that the mutated children are within the range:
-            i = np.clip(i, bounds_min, bounds_max)
-    return x
-
+            child = np.clip(child, bounds_min, bounds_max)
+    return child
 
 #def selection(x_old, x_children, f_old, f_children): 
     '''This function selects a number of genes in the total population to go to the next 
