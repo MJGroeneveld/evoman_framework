@@ -43,9 +43,9 @@ env.play()
 #### FUNCTIES ####
 #################################################################
 
-#def evaluate_candidate_population
-#Fitness function
-
+def evaluate_candidate(env,x):
+    f,p,e,t = env.play(pcont=x)
+    return f
 
 def select_parents_Roulette_Wheel(population_set, fitness_list):  #Roulette Wheel Selection
     total_fit = fitness_list.sum()
