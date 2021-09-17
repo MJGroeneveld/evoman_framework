@@ -143,6 +143,9 @@ def mutation (child):
             child = np.clip(child, bounds_min, bounds_max)
     return child
 
+#################################################################    
+#### selection functies - Globaal, dus nog niet af!          ####
+#################################################################
 #def selection(x_old, x_children, f_old, f_children): 
     '''This function selects a number of genes in the total population to go to the next 
     
@@ -174,6 +177,38 @@ def selection_mu_plus_lambda (child, parents, fit_child, fit_parents):
     x = x[ranks]
     f = f[ranks]
     return x[:pop_size], f[:pop_size]
+
+def tournament(parents, offspring, fit_pop): 
+    population = []
+    while len(population) != population_size:
+        participant1 = select_participant(parents) 
+        participant2 = select_participant(offspring)
+
+        fitness_participant1 = evaluate(participant1)
+        fitness_participant2 = evaluate(participant2)
+
+        if fitness_participant1 > fitness_participant2: 
+            population[participant1] = parents[participant1]
+        else: 
+            population[participant2] = offspring[participant2]
+       
+        #participant1 = select_participant(parents)  
+        #participant2 = select_participant(offspring)
+
+        #if parents[participant1] > offspring[participant2]: 
+        #    population[participant1] = parents[participant1]
+        #else: 
+        #    population[participant2] = offspring[participant2]
+
+    return population 
+
+def select_participant (pop): 
+    #select a participant
+    return np.random.choise(list(pop)) #Choose a random key from population; https://pynative.com/python-random-choice/
+
+# evaluation
+def evaluate(x):
+    return np.array(list(map(lambda y: simulation(env,y), x)))
 
 
 #################################################################    
