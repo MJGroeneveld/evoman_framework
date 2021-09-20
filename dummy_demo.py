@@ -242,6 +242,89 @@ def uniform_crossover(parents, dom_u, dom_l):
     return new_offspring, evaluate(new_offspring)
 
 
+#################################################################   
+#### selection functies - Globaal, dus nog niet af!          ####
+#################################################################
+#def selection(x_old, x_children, f_old, f_children):
+   '''This function selects a number of genes in the total population to go to the next
+  
+   Input:
+   x_old - array of population genes
+   x_children - array of children genes 
+   f_old - array of population fitness
+   f_children - array of children fitness
+  
+   Output:
+   x - array of genes which survived
+   f - array of fitness which survived '''
+	
+def selection_mu_comma_lambda (child, parents, fit_child):
+   #Children replace parents (mu, lambda):
+   x = child
+   f = fit_child #you get fit_child from the evaluate function (fitness function)
+   #sort the children based on their fitness:
+   ranks = argsort(f)
+   x = x[ranks]
+   f = f[ranks]
+   return x[:pop_size], f[:pop_size]
+
+
+
+def selection_mu_plus_lambda (child, parents, fit_child, fit_parents):
+   x = np.concatenate([child, parents])
+   f = np.concatenate([fit_child, fit_parents])
+   #sort the total population based on their fitness:
+   ranks = argsort(f)
+   x = x[ranks]
+   f = f[ranks]
+   return x[:pop_size], f[:pop_size]
+
+
+
+def tournament(parents, offspring, fit_pop):
+   population = []
+   while len(population) != population_size:
+       participant1 = select_participant(parents)
+       participant2 = select_participant(offspring)
+
+
+
+       fitness_participant1 = evaluate(participant1)
+       fitness_participant2 = evaluate(participant2)
+
+
+
+       if fitness_participant1 > fitness_participant2:
+           population[participant1] = parents[participant1]
+       else:
+           population[participant2] = offspring[participant2]
+     
+       #participant1 = select_participant(parents) 
+       #participant2 = select_participant(offspring)
+
+
+
+       #if parents[participant1] > offspring[participant2]:
+       #    population[participant1] = parents[participant1]
+       #else:
+       #    population[participant2] = offspring[participant2]
+
+
+
+   return population
+
+
+def select_participant (pop):
+   #select a participant
+   return np.random.choise(list(pop)) #Choose a random key from population; https://pynative.com/python-random-choice/
+
+
+#################################################################   
+#### END FUNCTIONS ####
+#################################################################
+
+
+
 def select_survivors(population, fitness):
     """
         Select survivors from the population
