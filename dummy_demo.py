@@ -159,28 +159,25 @@ def generate_population(dom_l, dom_u, npop, n_vars):
     return np.random.uniform(dom_l, dom_u, (npop, n_vars))
 
 
-def roulette_wheel_selection(population, fitness_values):
+def roulette_wheel_selection(population_set, fitness_list):
     """
         Depending on the percentage contribution to the total population, 
         a fitness string is selected for mating to form the next generation.
           - Thus a fitness string with the highest fitness value.
     """
+   total_fit = fitness_list.sum()
 
-    # change this for probabibilites.
-    
-    max_fitness = np.argmax(fitness_values)
-    min_fitness = np.argmin(fitness_values)
-    
-    best_chromosome = population[max_fitness]
-    worst_chromosome = population[min_fitness]
+   prob_list = fitness_list/total_fit
 
-    new_population = np.where(
-        population == worst_chromosome,
-        best_chromosome,
-        population
-    )
-    
-    return new_population
+   #Notice there is the chance that a parent. mates with oneself
+   parent_list_a = np.random.choice(list(range(len(population_set))), len(population_set),p=prob_list, replace=True)
+   parent_list_b = np.random.choice(list(range(len(population_set))), len(population_set),p=prob_list, replace=True)
+
+
+   parent_list_a = population_set[parent_list_a]
+   parent_list_b = population_set[parent_list_b]
+
+   return np.array([parent_list_a,parent_list_b])
 
 
 def uniform_crossover(parents, dom_u, dom_l):
