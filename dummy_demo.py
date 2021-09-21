@@ -92,22 +92,32 @@ def genetic_algorithm():
             population_fitness
         )
 
-        new_offspring, new_offspring_fitness = uniform_crossover(
+	new_offspring = uniform_crossover(
             selected_population,
             dom_u,
             dom_l
         )
-
+ 
+	new_offspring_fitness = evaluate(env, new_offspring)
+ 
         population = np.vstack(
             population,
             new_offspring
         )
+ 
+ 
         population_fitness = np.append(
             population_fitness,
             new_offspring_fitness
         )
 
-        survival_selection = select_survivors(
+
+        survival_selection1 = select_survivors(
+            new_offspring,
+            new_offspring_fitness
+        )
+	
+	survival_selection2 = select_survivors(
             population,
             population_fitness
         )
