@@ -112,7 +112,7 @@ def genetic_algorithm():
         )
 
 
-        survival_selection1 = select_survivors(
+        survival_selection1 = survivors_selection_mu_comma_lambda(
             new_offspring,
             new_offspring_fitness
         )
@@ -268,7 +268,7 @@ def uniform_crossover(parents, dom_u, dom_l):
    x - array of genes which survived
    f - array of fitness which survived '''
 	
-def selection_mu_comma_lambda (child, parents, fit_child):
+def survivors_selection_mu_comma_lambda (child, fit_child):
    #Children replace parents (mu, lambda):
    x = child
    f = fit_child #you get fit_child from the evaluate function (fitness function)
@@ -291,11 +291,11 @@ def selection_mu_plus_lambda (child, parents, fit_child, fit_parents):
 
 
 
-def tournament(parents, offspring, fit_pop):
-   population = []
-   while len(population) != population_size:
-       participant1 = select_participant(parents)
-       participant2 = select_participant(offspring)
+def survivors_selection_rr_tournament(population, fit_pop):
+   offspring = []
+   while len(offspring) != population_size:
+       participant1 = select_participant(population)
+       participant2 = select_participant(population)
 
 
 
@@ -305,9 +305,9 @@ def tournament(parents, offspring, fit_pop):
 
 
        if fitness_participant1 > fitness_participant2:
-           population[participant1] = parents[participant1]
+           offspring[participant1] = population[participant1]
        else:
-           population[participant2] = offspring[participant2]
+           offspring[participant2] = population[participant2]
      
        #participant1 = select_participant(parents) 
        #participant2 = select_participant(offspring)
@@ -321,7 +321,7 @@ def tournament(parents, offspring, fit_pop):
 
 
 
-   return population
+   return offspring
 
 
 def select_participant (pop):
