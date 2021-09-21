@@ -342,9 +342,21 @@ def schedule(pop, fit_pop):
                     round.append((t1, t2)) 
             schedule.append(round)
             map = map[mid:-1] + map[:mid] + map[-1:]
+	    # [2, 0, 1, 3]
+            # [1, 2, 0, 3]
+            # [0, 1, 2, 3]
     return schedule 
 
-def tournament(schedule, fit_pop): 
+def tournament(schedule, fit_pop):
+    for round in schedule:
+    	for m in round:
+        	print(m[0], m[1])
+    #1 4
+    #2 3
+    #4 3
+    #1 2
+    #2 4
+    #3 1
     offspring = []
     #hier moet dus nog een for loopje? 
     if fit_pop[schedule([0][0][0]] > fit_pop[schedule([0][0][1])]: #dan krijg je de eerste van schedule en daarvan de fitness
