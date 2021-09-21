@@ -347,26 +347,29 @@ def schedule(pop, fit_pop):
             # [0, 1, 2, 3]
     return schedule 
 
-def tournament(schedule, fit_pop):
-    for round in schedule:
-    	for m in round:
-        	print(m[0], m[1])
+def rr_tournament(schedule, fit_pop):
+	offspring = []    
+    	for round in schedule:
+        	for m in round:
+            		if fit_pop[m[0]] > fit_pop[m[1]]: 
+                		offspring.append(m[0])
+            	else: 
+                	offspring.append(m[1])
+                
+   	 return offspring
+    #for round in schedule:
+    #	for m in round:
+    #    	print(m[0], m[1])
     #1 4
     #2 3
     #4 3
     #1 2
     #2 4
     #3 1
-    offspring = []
-    #hier moet dus nog een for loopje? 
-    if fit_pop[schedule([0][0][0]] > fit_pop[schedule([0][0][1])]: #dan krijg je de eerste van schedule en daarvan de fitness
-        offspring.append(schedule[0][0][0])
-    else: 
-        offspring.append(schedule[0][0][1])
-    return offspring
+	
+  
 
-
-#bij elke individu in pop hoort een fit_pop. Wanneer die fit_pop > is dan die van de tegenstander dan stop je hem in een lijst.  ####
+ ####
 #################################################################
 
 
