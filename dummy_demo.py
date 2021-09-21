@@ -315,10 +315,47 @@ def survivors_selection_rr_tournament(population, fit_pop):
        #    population[participant1] = parents[participant1]
        #else:
        #    population[participant2] = offspring[participant2]
-
-
-
    return offspring
+
+
+#################################################################   
+#### I created something else. Need to check: 
+
+def schedule(pop, fit_pop):
+    #first create a schedule 
+    schedule = []
+    n = len(pop)
+    if n % 2 == 1: #wanneer de lengte van de population even is  (players = players + [None] --> kan er nog bij als het dus niet even is)
+       map = list(range(n)) #maakt een lijst aan -> wanneer n = 4: [0, 1, 2, 3]
+       mid = n // 2         #het midden van de lijst 
+    for i in range(n-1): 
+        l1 = map[:mid]      #[0, 1]
+        l2 = map[mid:]      #[2, 3]
+        l2.reverse()        #[3, 2]
+        round = []
+            for j in range(mid): 
+                t1 = pop[l1[j]] #hier voer je dan in welke speler tegen welke speler gaat 
+                t2 = pop[l2[j]]
+                if j == 0 and i % 2 == 1: 
+                    round.append((t2, t1)) #hier voeg je dus wie tegen wie speelt in iedere ronde. Dit stopt zodra iedereen tegen iedereen heeft gespeelt. 
+                else: 
+                    round.append((t1, t2)) 
+            schedule.append(round)
+            map = map[mid:-1] + map[:mid] + map[-1:]
+    return schedule 
+
+def tournament(schedule, fit_pop): 
+    offspring = []
+    #hier moet dus nog een for loopje? 
+    if fit_pop[schedule([0][0][0]] > fit_pop[schedule([0][0][1])]: #dan krijg je de eerste van schedule en daarvan de fitness
+        offspring.append(schedule[0][0][0])
+    else: 
+        offspring.append(schedule[0][0][1])
+    return offspring
+
+
+#bij elke individu in pop hoort een fit_pop. Wanneer die fit_pop > is dan die van de tegenstander dan stop je hem in een lijst.  ####
+#################################################################
 
 
 def select_participant (pop):
