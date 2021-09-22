@@ -38,8 +38,8 @@ def genetic_algorithm(survival_method):
     # genetic algorithm parameters
     dom_l = 1
     dom_u = -1
-    pop_size = 10
-    n_parents = 4
+    pop_size = 100
+    n_parents = 50
     no_of_generations = 20
     each_generation = 0
         
