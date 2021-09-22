@@ -1,4 +1,3 @@
-
 ################################
 # EvoMan FrameWork - V1.0 2016 #
 # Author: Karine Miras         #
@@ -98,8 +97,8 @@ def genetic_algorithm(survival_method):
             ]
         )
         
-        selected_population = roulette_wheel_selection(
-            population,
+        selected_population, rest_population, rest_population_fitness = roulette_wheel_selection(
+            population, population_fitness,
             population_fitness_norm
         )
 
@@ -107,25 +106,15 @@ def genetic_algorithm(survival_method):
                 selected_population,
                 dom_u,
                 dom_l
-            )
+            )  
         
         new_offspring_fitness = evaluate(env, new_offspring)
- 
-        population = np.append(
-            population,
-            new_offspring,
-            axis=0
-        )
-
-        population_fitness = np.append(
-            population_fitness,
-            new_offspring_fitness
-        )
 
         if survival_method == "mu_lamda":
             population, population_fitness = survivors_selection_mu_comma_lambda(
-                new_offspring,new_offspring_fitness
+                rest_population, new_offspring, new_offspring_fitness, rest_population_fitness
             )
+
 
         elif survival_method == "rr_tournament":
             population, population_fitness = survivors_selection_rr_tournament(
@@ -133,13 +122,23 @@ def genetic_algorithm(survival_method):
             )
         
         elif survival_method == "rank":
+            population = np.append(
+                population,
+                new_offspring,
+                axis=0
+            )
+
+            population_fitness = np.append(
+            population_fitness,
+            new_offspring_fitness
+            )
+
             population, population_fitness = select_survivors(
                 population, population_fitness
             )
 
         else:
             raise ValueError("Survival method not valid")
-
 
         fitness_scores_matrix[each_generation, :] = population_fitness
 
@@ -192,14 +191,14 @@ def generate_population(dom_l, dom_u, npop, n_vars):
     return np.random.uniform(dom_l, dom_u, (npop, n_vars))
 
 
-def roulette_wheel_selection(population, fitness_array, number_parents=2):
+def roulette_wheel_selection(population, population_fitness, fitness_array_norm, number_parents=2):
     """
         Depending on the percentage contribution to the total population, 
         a fitness string is selected for mating to form the next generation.
           - Thus a fitness string with the highest fitness value.
     """
-    total_fit = np.sum(fitness_array)
-    relative_fitness = [f / total_fit for f in fitness_array]
+    total_fit = np.sum(fitness_array_norm)
+    relative_fitness = [f / total_fit for f in fitness_array_norm]
 
     selected_indeces = np.random.choice(
         range(len(relative_fitness)), 
@@ -208,8 +207,10 @@ def roulette_wheel_selection(population, fitness_array, number_parents=2):
         replace=False
     )
     selected_parents = population[selected_indeces, :] 
+    population = np.delete(population, selected_indeces, axis=0)
+    population_fitness = np.delete(population_fitness, selected_indeces, axis=0)
     
-    return selected_parents
+    return selected_parents, population, population_fitness
 
 def uniform_crossover(parents, dom_u, dom_l): 
     """
@@ -286,11 +287,19 @@ def mutate(child, dom_u, dom_l, probability=0.2):
 #### selection functies - Globaal, dus nog niet af!          ####
 #################################################################
 	
-def survivors_selection_mu_comma_lambda (population, parent):
+def survivors_selection_mu_comma_lambda (population, children, population_fitness, children_population_fitness):
    #Children replace parents (mu, lambda)
+    new_population = np.append(
+        population,
+        children,
+        axis=0
+    )
 
-   new_population =
-   return new_population
+    new_population_fitness = np.append(
+        population_fitness,
+        children_population_fitness,
+    )
+    return new_population, new_population_fitness
 
 
 
@@ -377,4 +386,4 @@ def evaluate(env, population):
 #################################################################
 
 
-genetic_algorithm("rank")
+genetic_algorithm("mu_lamda")
