@@ -38,8 +38,8 @@ def genetic_algorithm(survival_method):
     # genetic algorithm parameters
     dom_l = 1
     dom_u = -1
-    pop_size = 10
-    n_parents = 4
+    pop_size = 20
+    n_parents = 10
     no_of_generations = 20
     each_generation = 0
         
@@ -119,9 +119,8 @@ def genetic_algorithm(survival_method):
         new_offspring_fitness = evaluate(env, new_offspring)
 
         if survival_method == "mu_comma_lamda":
-            population, population_fitness = survivors_selection_mu_comma_lambda(
-                rest_population, new_offspring, new_offspring_fitness, rest_population_fitness
-            )
+            population = new_offspring
+            population_fitness = new_offspring_fitness
 
         else:
             population = np.append(
@@ -278,27 +277,6 @@ def mutate(child, dom_u, dom_l, probability=0.2, mutation_step_size=0.2):
     
     return child
 
-
-#################################################################   
-#### selection functies - Globaal, dus nog niet af!          ####
-#################################################################
-	
-def survivors_selection_mu_comma_lambda (population, children, population_fitness, children_population_fitness):
-   #Children replace parents (mu, lambda)
-    new_population = np.append(
-        population,
-        children,
-        axis=0
-    )
-
-    new_population_fitness = np.append(
-        population_fitness,
-        children_population_fitness,
-    )
-    return new_population, new_population_fitness
-
-
-
 def survivors_selection_mu_plus_lambda (population, fitness, pop_size):
    #sort the total population based on their fitness:
    ranks = argsort(fitness)
@@ -381,4 +359,4 @@ def evaluate(env, population):
 #################################################################
 
 
-genetic_algorithm("rr_tournament")
+genetic_algorithm("mu_comma_lamda")
