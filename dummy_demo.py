@@ -11,9 +11,6 @@ sys.path.insert(0, 'evoman')
 from environment import Environment
 from demo_controller import player_controller
 
-import pandas as pd
-import matplotlib.pyplot as plt
-
 import time
 import numpy as np
 from math import fabs, sqrt
@@ -25,12 +22,12 @@ if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 
-def genetic_algorithm(survival_method):
+def genetic_algorithm(survival_method, experiment_name):
     """
         Genetic algorithm solver
     """
     
-    experiment_name = 'dummy_demo'
+    # experiment_name = 'dummy_demo'
     if not os.path.exists(experiment_name):
         os.makedirs(experiment_name)
 
@@ -41,10 +38,10 @@ def genetic_algorithm(survival_method):
     # genetic algorithm parameters
     dom_l = 1
     dom_u = -1
-    pop_size = 40
+    pop_size = 100
     n_children = 2
-    n_parents = 10
-    no_of_generations = 20
+    n_parents = 50
+    no_of_generations = 30
     each_generation = 0
     sigma = 0.2
     not_improved = 0
@@ -86,11 +83,15 @@ def genetic_algorithm(survival_method):
     std  =  np.std(population_fitness)
     mean = np.mean(population_fitness)
 
+    overall_best = population[best]
+    overall_best_fitness = population_fitness[best]
+    print("overall best before", population_fitness[best])
+
     # saves results for first pop
     file_aux  = open(experiment_name+'/results.txt','a')
-    file_aux.write('\n\ngen best mean std')
+    file_aux.write('\n\ngen,best,mean,std')
     print( '\n GENERATION '+str(each_generation)+' '+str(round(population_fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
-    file_aux.write('\n'+str(each_generation)+' '+str(round(population_fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6))   )
+    file_aux.write('\n'+str(each_generation)+','+str(round(population_fitness[best],6))+','+str(round(mean,6))+','+str(round(std,6))   )
     file_aux.close()
     
     for each_generation in range(1, no_of_generations):
@@ -142,9 +143,7 @@ def genetic_algorithm(survival_method):
             else:
                 raise ValueError("Survival method not valid")
         
-        print("old sigma", sigma)
         sigma = adeptive_mutate(sigma, no_of_generations)
-        print("new sigma", sigma)
 
         fitness_scores_matrix[each_generation, :] = population_fitness
         population_diversity = calculate_population_diversity(population)
@@ -152,40 +151,56 @@ def genetic_algorithm(survival_method):
 
         print("Generation finished " + str(each_generation))
 
-        last_best = best
         best = np.argmax(population_fitness)
-        std  =  np.std(population_fitness)
+        std  = np.std(population_fitness)
         mean = np.mean(population_fitness)
 
+        if population_fitness[best] >= overall_best_fitness:
+            overall_best = population[best]
+            overall_best_fitness = population_fitness[best]
+        else:
+            not_improved += 1
 
         # saves results
         file_aux  = open(experiment_name+'/results.txt','a')
         print( '\n GENERATION '+str(each_generation)+' '+str(round(population_fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
-        file_aux.write('\n'+str(each_generation)+' '+str(round(population_fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6))   )
+        file_aux.write('\n'+str(each_generation)+','+str(round(population_fitness[best],6))+','+str(round(mean,6))+','+str(round(std,6))   )
         file_aux.close()
 
         # saves generation number
-        file_aux  = open(experiment_name+'/gen.txt','w')
+        file_aux = open(experiment_name+'/gen.txt','w')
         file_aux.write(str(each_generation))
         file_aux.close()
 
         # saves file with the best solution
-        np.savetxt(experiment_name+'/best.txt', np.array(population[best]))
+        np.savetxt(experiment_name+'/best.txt', population[best])
+        np.savetxt(experiment_name+'/overall_best.txt', overall_best)
 
         # saves simulation state
         solutions = [population, population_fitness]
         env.update_solutions(solutions)
         env.save_state()
 
-        if last_best >= best:
-            not_improved += 1
         if not_improved > 10:
             population = selection_pressure(population, population_fitness, pop_size, n_vars, dom_l, dom_u)
+            not_improved = 0
 
     np.savetxt(
         "fitness_scores_matrix.txt",
         fitness_scores_matrix
     )
+
+    # Evaluate overall best 5 times
+    file_aux = open(experiment_name+'/champion_boxplot.txt','w')
+    file_aux.write('fitness, individual_gain')
+    for i in range(0, 5):
+        best_fitness = calculate_fitness(env, overall_best)
+        best_gain = calculate_individual_gain(env, overall_best)
+        file_aux.write('\n'+ str(best_fitness) + ',' + str(best_gain))
+
+        print(f"Best individual gain {i}", best_gain)
+
+    file_aux.close()
 
     return population, population_fitness
 
@@ -218,10 +233,8 @@ def roulette_wheel_selection2(population, fitness_array_norm):
         replace=False
     )
     selected_parent = population[selected_indeces, :] 
-    # population = np.delete(population, selected_indeces, axis=0)
-    # population_fitness = np.delete(population_fitness, selected_indeces, axis=0)
     
-    return selected_parent#, population, population_fitness
+    return selected_parent
 
 
 def roulette_wheel_selection(population, fitness_array_norm, number_parents):
@@ -387,19 +400,14 @@ def survivors_selection_rr_tournament(pop, fit_pop, pop_size):
 
 def selection_pressure(population, fitness, pop_size, n_vars, dom_l, dom_u):
     
-    n_away = pop_size/3
+    n_away = int(pop_size/3)
     order = np.argsort(fitness)
-    orderasc = order[0, n_away]
+    orderasc = order[0:n_away]
 
     for i in orderasc:
-        population[i, :] = np.random.uniform(dom_l, dom_u, (pop_size, n_vars))
-
+        population[i, :] = np.random.uniform(dom_l, dom_u, (1, n_vars))
 
     return population
-
-def select_participant (pop):
-   #select a participant
-   return np.random.choise(list(pop)) #Choose a random key from population; https://pynative.com/python-random-choice/
 
 
 def calculate_fitness(env, x):
@@ -412,6 +420,20 @@ def calculate_fitness(env, x):
     f, p, e, t = env.play(pcont=x)
     
     return f
+
+
+def calculate_individual_gain(env, x):
+    """
+        Run a simulation on an environment
+        and return the player fitness value
+            - Returns a value for the fitness
+    """
+
+    f, p, e, t = env.play(pcont=x)
+
+    ind_gain = p - e
+    
+    return ind_gain
 
 def calculate_population_diversity(population):
     pop_size = len(population)
@@ -440,30 +462,13 @@ def evaluate(env, population):
         )
     )
 
-
-def generate_line_plots():
-    """
-        Generate Line Plots
-    """
-
-    data_frame = pd.read_csv("dummy_demo/results.txt")
-
-    gen = data_frame["gen"]
-    best = data_frame["best"]
-    mean = data_frame["mean"]
-    std = data_frame["std"]
-
-    plt.errorbar(gen, mean, std, fmt='ok', lw=3, label="C1")
-    plt.errorbar(gen, best, std, fmt='ok', lw=3, label="C2")
-    plt.ylabel('Fitness')
-    plt.xlabel('Generations')
-    plt.title('Fitness v/s Generations')
-
-    return True
-
 #################################################################   
 #### END FUNCTIONS ####
 #################################################################
 
+for run in range(0, 10):
+    print(f"############### START RUN {run} ###############")
 
-genetic_algorithm("rr_tournament")
+    survival_method = "mu_comma_lambda"
+    experiment_name = f"{survival_method}_{run}"
+    genetic_algorithm(survival_method, experiment_name)
