@@ -11,6 +11,9 @@ sys.path.insert(0, 'evoman')
 from environment import Environment
 from demo_controller import player_controller
 
+import pandas as pd
+import matplotlib.pyplot as plt
+
 import time
 import numpy as np
 from math import fabs, sqrt
@@ -436,6 +439,27 @@ def evaluate(env, population):
             )
         )
     )
+
+
+def generate_line_plots():
+    """
+        Generate Line Plots
+    """
+
+    data_frame = pd.read_csv("dummy_demo/results.txt")
+
+    gen = data_frame["gen"]
+    best = data_frame["best"]
+    mean = data_frame["mean"]
+    std = data_frame["std"]
+
+    plt.errorbar(gen, mean, std, fmt='ok', lw=3, label="C1")
+    plt.errorbar(gen, best, std, fmt='ok', lw=3, label="C2")
+    plt.ylabel('Fitness')
+    plt.xlabel('Generations')
+    plt.title('Fitness v/s Generations')
+
+    return True
 
 #################################################################   
 #### END FUNCTIONS ####
