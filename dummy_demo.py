@@ -50,7 +50,7 @@ def genetic_algorithm(survival_method, experiment_name):
     # Initialize Environment
     env = Environment(
         experiment_name = experiment_name,
-        enemies = [3],
+        enemies = [6],
         playermode = "ai",
         player_controller = player_controller(n_hidden_neurons),
         enemymode = "static",
