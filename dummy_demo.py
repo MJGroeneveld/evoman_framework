@@ -39,7 +39,7 @@ def genetic_algorithm(survival_method, experiment_name):
     dom_l = 1
     dom_u = -1
     pop_size = 100
-    n_children = 2
+    n_children = 4
     n_parents = 50
     no_of_generations = 30
     each_generation = 0
@@ -50,7 +50,7 @@ def genetic_algorithm(survival_method, experiment_name):
     # Initialize Environment
     env = Environment(
         experiment_name = experiment_name,
-        enemies = [6],
+        enemies = [1],
         playermode = "ai",
         player_controller = player_controller(n_hidden_neurons),
         enemymode = "static",
@@ -133,13 +133,6 @@ def genetic_algorithm(survival_method, experiment_name):
                 population, population_fitness = survivors_selection_rr_tournament(
                     population, population_fitness, pop_size
                 )
-            
-            elif survival_method == "rank":
-
-                population, population_fitness = select_survivors(
-                    population, population_fitness
-                )
-
             else:
                 raise ValueError("Survival method not valid")
         
@@ -182,7 +175,7 @@ def genetic_algorithm(survival_method, experiment_name):
         env.save_state()
 
         if not_improved > 10:
-            population = selection_pressure(population, population_fitness, pop_size, n_vars, dom_l, dom_u)
+            population = not_optimizing(population, population_fitness, pop_size, n_vars, dom_l, dom_u)
             not_improved = 0
 
     np.savetxt(
@@ -218,25 +211,6 @@ def generate_population(dom_l, dom_u, npop, n_vars):
     
     return np.random.uniform(dom_l, dom_u, (npop, n_vars))
 
-def roulette_wheel_selection2(population, fitness_array_norm):
-    """
-        Depending on the percentage contribution to the total population, 
-        a fitness string is selected for mating to form the next generation.
-          - Thus a fitness string with the highest fitness value.
-    """
-    total_fit = np.sum(fitness_array_norm)
-    relative_fitness = [f / total_fit for f in fitness_array_norm]
-
-    selected_indeces = np.random.choice(
-        range(len(relative_fitness)), 
-        p=relative_fitness,
-        replace=False
-    )
-    selected_parent = population[selected_indeces, :] 
-    
-    return selected_parent
-
-
 def roulette_wheel_selection(population, fitness_array_norm, number_parents):
     """
         Depending on the percentage contribution to the total population, 
@@ -253,10 +227,8 @@ def roulette_wheel_selection(population, fitness_array_norm, number_parents):
         replace=False
     )
     selected_parent = population[selected_indeces, :] 
-    # population = np.delete(population, selected_indeces, axis=0)
-    # population_fitness = np.delete(population_fitness, selected_indeces, axis=0)
     
-    return selected_parent#, population, population_fitness
+    return selected_parent
 
 def uniform_crossover(population, fitness_array_norm, number_parents, n_children, dom_u, dom_l, sigma): 
     """
@@ -300,48 +272,6 @@ def uniform_crossover(population, fitness_array_norm, number_parents, n_children
             
     return new_offspring_array
 
-def uniform_crossover2(population, fitness_array_norm, n_children, dom_u, dom_l, sigma): 
-    """
-        Perform uniform crossover on parents.
-    """
-
-    new_offspring = []
-
-    for p in range(0, population.shape[0]):
-        parent_1 = roulette_wheel_selection2(population, fitness_array_norm)
-
-        for i in range(0, int(n_children/2)):
-            parent_2 = roulette_wheel_selection2(population, fitness_array_norm)
-            random_crossover_vector = np.random.randint(
-                0, 2, parent_1.shape[0])
-
-            inverse_crossover_vector = (random_crossover_vector - 1) * -1
-
-
-            child_1 = (parent_1 * random_crossover_vector) + (parent_2 * inverse_crossover_vector)
-            child_2 = (parent_1 * inverse_crossover_vector) + (parent_2 * random_crossover_vector)
-
-            child_1 = mutate(child_1, dom_u, dom_l, sigma)
-            child_2 = mutate(child_2, dom_u, dom_l, sigma)
-        
-
-            new_offspring.append(
-                np.array(
-                    child_1
-                )
-            )
-        
-            new_offspring.append(
-                np.array(
-                    child_2
-                )
-            )
-           
-    new_offspring_array = np.array(new_offspring)
-            
-    return new_offspring_array
-
-
 def mutate(child, dom_u, dom_l, mutation_step_size, probability=0.2):
     """
         Mutate the offsprings and calculate fitness values for comparison
@@ -364,7 +294,6 @@ def adeptive_mutate(sigma, gens):
     return new_sigma
 
 def survivors_selection_mu_comma_lambda (offspring, fitness, pop_size):
-   #sort the children offspring based on their fitness:
    ranks = fitness.argsort()[::-1]
    new_population = offspring[ranks]
    new_population_fitness = fitness[ranks]
@@ -398,7 +327,7 @@ def survivors_selection_rr_tournament(pop, fit_pop, pop_size):
     return pop[selected, :], fit_pop[selected]
 
 
-def selection_pressure(population, fitness, pop_size, n_vars, dom_l, dom_u):
+def not_optimizing(population, fitness, pop_size, n_vars, dom_l, dom_u):
     
     n_away = int(pop_size/3)
     order = np.argsort(fitness)
